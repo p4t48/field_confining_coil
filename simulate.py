@@ -19,10 +19,10 @@ s.SquareFrontPanelMisalignment(0.007, coilWidth)
 s.PCBThickness(0.0009, coilWidth)
 
 s.Plot2D()
-s.Build3DGeom(coilWidth)
-s.Plot3D()
-s.Arrows3D()
-s.Draw3D()
+#s.Build3DGeom(coilWidth)
+#s.Plot3D()
+#s.Arrows3D()
+#s.Draw3D()
 
 
 xMin = 0.05
