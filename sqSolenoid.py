@@ -409,6 +409,3 @@ class Solenoid(Geometry):
         # Pandas export to csv
         outputFile = self.workingFolder + "SqSolenoid_ROI_connected_%s_z_%1.3fm_current_%1.3fA.csv" % (connection, zValue, current)
         df.to_csv(outputFile, index=False, sep='\t')
-        
-
-

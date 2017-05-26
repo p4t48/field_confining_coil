@@ -108,7 +108,7 @@ class Geometry:
         bottom = np.hstack((points2D, 0*np.ones((points2D.shape[0],1))))
         top = np.hstack((points2D, zHeight*np.ones((points2D.shape[0],1))))
 
-        for i in range((len(bottom)-1)/2):
+        for i in range(int((len(bottom)-1)/2)):
             # The five points build a disconnected loop coil (for winding sense use Arrows3D)
 #            loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i]] # Disconnected loop
 #            loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] # connected_b
