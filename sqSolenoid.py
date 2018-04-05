@@ -1,32 +1,5 @@
 """
 This file contains the Solenoid class which inherits from Geometry.
-It has the following methods:
-
--- Bfield(current, loc, pk, pk1): Calculates the B-field of a straight current carrying wire with the formula (9) of J. D. Hanson and S. P. Hirshman 
-
--- loopField(coilCurrent, loc, loop): Calculates the B field components at a given point loc for one loop of the coil.
-
--- CalcB(coilCurrent, xPos, yIni, yFin, zPos, nBy, grid): Calculates the B field components along a given axis for a coil geometry defined by the points
-
--- CalcdB(coilCurrent, xPos, yIni, yFin, zPos, nBy, grid): Calculates the gradients dBx/dz, dBy/dz, dBz/dz along the solenoid axis 
-
--- PlotB(coilCurrent, xPos, yIni, yFin, zPos, nBy): Plots B components as a function of z through (x,y) in the solenoid 
-
--- PlotdB(coilCurrent, xPos, yIni, yFin, zPos, nBy): Plots dB components as a function of z through (x,y) in the solenoid
-
--- CalcBGrid(coilCurrent, xVals, yIni, yFin, zVals, nBy): Calculates a grid of field values for a countour plot 
-
--- CalcdBGrid(coilCurrent, xVals, yIni, yFin, zVals, nBy): Calculates a grid of gradient values for a countour plot
-
--- ContourB(coilCurrent, xVals, yIni, yFin, zVals, nBy): Makes the contour plot of the calculated field values over the given region.
-
--- ContourBi(coilCurrent, xVals, yIni, yFin, zVals, nBy): Makes the contour plot of the calculated Bi (i.e. x, y) field values over the given region. 
-
--- ContourdB(coilCurrent, xVals, yIni, yFin, zVals, nBy): Makes the contour plot of the calculated field values over the given region.
-
--- MeandB(radius, solCenter, dB, current, shift): Calculates mean, median, std of a given region of interest (position of magnetometer) in the coil.  
-
--- ROI(zValue, connection, current): Exports field values of a calculated ROI and saves it to a csv file.
 
 """
 

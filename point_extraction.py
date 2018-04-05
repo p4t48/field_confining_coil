@@ -1,39 +1,6 @@
 """
 This file contains the Geometry class. 
 
-The methods of the Geometry class are used to extract data points on the coil geometry from the coil_geometries folder.
-The file contains the following functions:
-
--- find_nearest(array,value): Returns the location of the element in an array which is closest to a given value.
-
--- find_furthest(array,value): Returns the location of the element in an array which is furthest to a given value.
-
-
-The file contains the following methods (of the Geometry class):
-
--- BoundaryPoints(): The method extracts points from a COMSOL generated file. The points are the boundary points of the isopotentials drawn with COMSOL.
-
--- Build3DGeom(zHeight): This method uses the previously extracted points (in 2D) and extends the geometry to 3D. The points are grouped into groups of four which build up one single loop.
-
--- Plot2D(): Visualize the extracted points to check if everything is ok.
-
--- Plot3D(): Visualize the 3D geometry to check if everything is ok.
-
--- Arrows3D(): In order to check the winding direction of the current loop, plot the wires as arrows.
-
--- Draw3D(): Draws a 3D squeleton of the coil as illustration of the coil geometry.
-
--- SquareBoundaryPoints(): The method extracts points from a COMSOL generated file for a square coil geometry. The points are the boundary points of the isopotentials drawn with COMSOL.
-
--- HexagonalBoundaryPoints(): The method extracts points from a COMSOL generated file for a hexagonal coil geometry. The points are the boundary points of the isopotentials drawn with COMSOL.
-
--- SquareSimpleMisalignment(shift, coilWidth): Misaligns the outer wire locations of the 2D points by "shift".
-
--- SquareFrontPanelMisalignment(shift, coilWidth): Shifts the position of the front panel of the 2D points by "shift". 
-
--- PCBThickness(thickness, coilWidth): Misaligns the 2D points by "thickness/sqrt(2)" to simulate the PCB thickness. 
-
--- BuildSqSolenoid(nWindings, loopSpacing, sideLength): Defines points for a square cross section solenoid composed of n loops and 'spacing' between the separate loops
 
 """
 
