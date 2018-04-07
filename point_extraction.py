@@ -18,7 +18,7 @@ def find_nearest(array,value):
     Returns the location of the element in an array which is closest to a given value. 
     """
     
-    idx = (np.abs(array-value)).argmin()
+    idx = (np.abs(array-value)).idxmin()
     return idx
 
 def find_furthest(array,value):
@@ -26,7 +26,7 @@ def find_furthest(array,value):
     Returns the location of the element in an array which is furthest to a given value. 
     """
     
-    idx = (np.abs(array-value)).argmax()
+    idx = (np.abs(array-value)).idxmax()
     return idx
 
 
@@ -39,6 +39,71 @@ class Geometry:
         self.points2D = []
         self.points = []
 
+    def SquareBoundaryPoints(self):
+        """ 
+        The method extracts points from a COMSOL generated file for a square coil geometry. 
+        The points are the boundary points of the magnetic isopotentials drawn with COMSOL. 
+        """
+        
+        data = pd.read_csv(self.dataFile, skiprows=8, header=None, names=["x","y","IsoLevel","Color","Radius"])
+     
+        # The square coil has four sections which each works like a solenoid
+        rightTrapezoid = []
+        leftTrapezoid = []
+        topTrapezoid = []
+        bottomTrapezoid = []
+
+        # Each isopotential value has four individual loops which need to be extracted
+        for value in np.unique(data['IsoLevel'].values):
+
+            # Start with one given isopotential value
+            extracted = data[data['IsoLevel'] == value]
+
+            # The color map set in COMSOL helps to sort the points
+            posCol = extracted[extracted['Color'] > 0.5]
+            negCol = extracted[extracted['Color'] < -0.5]
+
+            zeroNegCol = extracted[extracted['Color'] < 0.5]
+            zeroCol = zeroNegCol[zeroNegCol['Color'] > -0.5]
+
+            yPosZeroCol = zeroCol[zeroCol['y'] > 0]
+            yNegZeroCol = zeroCol[zeroCol['y'] < 0]
+
+            # X closest, furthest to zero  criterion on left right parts is more stable
+            for i in [posCol, negCol]:
+                temp = find_nearest(i['x'],0)
+                temp = i.loc[temp]
+                minX = [temp[0], temp[1]]
+
+                temp = find_furthest(i['x'],0)
+                temp = i.loc[temp]
+                maxX = [temp[0], temp[1]]
+
+
+                if i[i['x'] < 0]['x'].any() :
+                    leftTrapezoid.append([minX, maxX])
+                else:
+                    rightTrapezoid.append([minX, maxX])
+
+
+            for i in [yPosZeroCol, yNegZeroCol]:
+                temp = find_nearest(i['y'],0)
+                temp = i.loc[temp]
+                minY = [temp[0], temp[1]]
+
+                temp = find_furthest(i['y'],0)
+                temp = i.loc[temp]
+                maxY = [temp[0], temp[1]]
+
+ 
+                if i[i['y'] < 0]['y'].any() :
+                    bottomTrapezoid.append([minY, maxY])
+                else:
+                    topTrapezoid.append([minY, maxY])
+
+        leftTrapezoid = leftTrapezoid[::-1]
+        rightTrapezoid = rightTrapezoid[::-1]
+        self.points2D = list(chain.from_iterable([leftTrapezoid, bottomTrapezoid, rightTrapezoid, topTrapezoid]))
 
 
     def Build3DGeom(self, zHeight):
@@ -161,70 +226,6 @@ class Geometry:
         plt.show()
 
         
-    def SquareBoundaryPoints(self):
-        """ 
-        The method extracts points from a COMSOL generated file for a square coil geometry. 
-        The points are the boundary points of the isopotentials drawn with COMSOL. 
-        """
-        
-        data = pd.read_csv(self.dataFile, skiprows=8, header=None, names=["x","y","IsoLevel","Color","Radius"])
-     
-        rightTrapezoid = []
-        leftTrapezoid = []
-        topTrapezoid = []
-        bottomTrapezoid = []
-
-        # Each isopotential value has four individual loops which need to be extracted
-        for value in np.unique(data['IsoLevel'].values):
-
-            # Start with one given isopotential value
-            extracted = data[data['IsoLevel'] == value]
-
-            # The color map set in COMSOL helps to sort the points
-            posCol = extracted[extracted['Color'] > 0.5]
-            negCol = extracted[extracted['Color'] < -0.5]
-
-            zeroNegCol = extracted[extracted['Color'] < 0.5]
-            zeroCol = zeroNegCol[zeroNegCol['Color'] > -0.5]
-
-            yPosZeroCol = zeroCol[zeroCol['y'] > 0]
-            yNegZeroCol = zeroCol[zeroCol['y'] < 0]
-
-            # X closest, furthest to zero  criterion on left right parts is more stable
-            for i in [posCol, negCol]:
-                temp = find_nearest(i['x'],0)
-                temp = i.loc[temp]
-                minX = [temp[0], temp[1]]
-
-                temp = find_furthest(i['x'],0)
-                temp = i.loc[temp]
-                maxX = [temp[0], temp[1]]
-
-
-                if i[i['x'] < 0]['x'].any() :
-                    leftTrapezoid.append([minX, maxX])
-                else:
-                    rightTrapezoid.append([minX, maxX])
-
-
-            for i in [yPosZeroCol, yNegZeroCol]:
-                temp = find_nearest(i['y'],0)
-                temp = i.loc[temp]
-                minY = [temp[0], temp[1]]
-
-                temp = find_furthest(i['y'],0)
-                temp = i.loc[temp]
-                maxY = [temp[0], temp[1]]
-
- 
-                if i[i['y'] < 0]['y'].any() :
-                    bottomTrapezoid.append([minY, maxY])
-                else:
-                    topTrapezoid.append([minY, maxY])
-
-        leftTrapezoid = leftTrapezoid[::-1]
-        rightTrapezoid = rightTrapezoid[::-1]
-        self.points2D = list(chain.from_iterable([leftTrapezoid, bottomTrapezoid, rightTrapezoid, topTrapezoid]))
 
 
     def HexagonalBoundaryPoints(self):
