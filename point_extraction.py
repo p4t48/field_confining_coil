@@ -14,12 +14,18 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def find_nearest(array,value):
-    """ Returns the location of the element in an array which is closest to a given value. """
+    """ 
+    Returns the location of the element in an array which is closest to a given value. 
+    """
+    
     idx = (np.abs(array-value)).argmin()
     return idx
 
 def find_furthest(array,value):
-    """ Returns the location of the element in an array which is furthest to a given value. """
+    """ 
+    Returns the location of the element in an array which is furthest to a given value. 
+    """
+    
     idx = (np.abs(array-value)).argmax()
     return idx
 
@@ -35,7 +41,10 @@ class Geometry:
 
 
     def BoundaryPoints(self):
-        """ The method extracts points from a COMSOL generated file. The points are the boundary points of the isopotentials drawn with COMSOL. """
+        """ 
+        The method extracts points from a COMSOL generated file. 
+        The points are the boundary points of the isopotentials drawn with COMSOL. 
+        """
 
         data = pd.read_csv(self.dataFile, skiprows=8, header=None, names=["x","y","IsoLevel","Color","Radius"])
         
@@ -108,7 +117,10 @@ class Geometry:
         self.points2D = list(chain.from_iterable([topLeftFlux, leftSol, bottomLeftFlux, bottomRightFlux, rightSol, topRightFlux]))
 
     def Build3DGeom(self, zHeight):
-        """ This method uses the previously extracted points (in 2D) and extends the geometry to 3D. The points are grouped into groups of four which build up one single loop. """
+        """ 
+        This method uses the previously extracted points (in 2D) and extends the geometry to 3D. 
+        The points are grouped into groups of four which build up one single loop. 
+        """
 
         points2D = list(chain.from_iterable(self.points2D))
         points2D = np.array(points2D)
@@ -126,7 +138,9 @@ class Geometry:
         self.points = np.array(self.points)
 
     def Plot2D(self):
-        """ Visualize the extracted points to check if everything is ok. """
+        """ 
+        Visualize the extracted points to check if everything is ok. 
+        """
 
         test = list(chain.from_iterable(self.points2D))
         test = np.array(test)
@@ -139,7 +153,9 @@ class Geometry:
         plt.show()
  
     def Plot3D(self):
-        """ Visualize the 3D geometry to check if everything is ok. """
+        """ 
+        Visualize the 3D geometry to check if everything is ok. 
+        """
 
         test = list(chain.from_iterable(self.points))
         test = np.array(test)
@@ -156,7 +172,9 @@ class Geometry:
 
 
     def Arrows3D(self):
-        """ In order to check the winding direction of the current loop, plot the wires as arrows. """
+        """ 
+        In order to check the winding direction of the current loop, plot the wires as arrows. 
+        """
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
@@ -182,7 +200,10 @@ class Geometry:
         plt.show()
 
     def Draw3D(self):
-        """ Draws a 3D squeleton of the coil as illustration of the coil geometry. """
+        """ 
+        Draws a 3D squeleton of the coil as illustration of the coil geometry. 
+        """
+        
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
@@ -216,7 +237,10 @@ class Geometry:
 
         
     def SquareBoundaryPoints(self):
-        """ The method extracts points from a COMSOL generated file for a square coil geometry. The points are the boundary points of the isopotentials drawn with COMSOL. """
+        """ 
+        The method extracts points from a COMSOL generated file for a square coil geometry. 
+        The points are the boundary points of the isopotentials drawn with COMSOL. 
+        """
         
         data = pd.read_csv(self.dataFile, skiprows=8, header=None, names=["x","y","IsoLevel","Color","Radius"])
      
