@@ -189,10 +189,21 @@ class Geometry:
         self.points2D = list(chain.from_iterable([topTrapezoid, topLeftTrapezoid, bottomLeftTrapezoid, bottomTrapezoid, bottomRightTrapezoid, topRightTrapezoid]))
 
 
-    def Build3DGeom(self, zHeight):
+    def Build3DGeom(self, zHeight, loopType):
         """ 
         This method uses the previously extracted points (in 2D) and extends the geometry to 3D. 
         The points are grouped into groups of four which build up one single loop. 
+        
+        Parameters:
+        -----------
+        
+        zHeight: scalar # in m
+            It provides the height of the coil in meters.
+            
+        loopType: string # 
+            Determines how the individual current loops will be connected.    
+            Values: "disc", "inner_edge", "outer_edge", "oblique"
+            
         """
 
         points2D = list(chain.from_iterable(self.points2D))
@@ -201,18 +212,29 @@ class Geometry:
         top = np.hstack((points2D, zHeight*np.ones((points2D.shape[0],1))))
 
         for i in range(int((len(bottom)-1)/2)):
-            # The five points build a disconnected loop coil (for winding sense use Arrows3D)
-#            loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i]] # Disconnected loop
-#            loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] # connected_b
-#            loop = [top[2*i+1], top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i+3]] # connected_a
-            loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i+2]] # connected_bc
+            
+            loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] 
+            """
+            if loopType == "disc":
+                # The five points build a disconnected loop coil (for winding sense use Arrows3D)
+                loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i]] 
+            elif loopType == "outer_edge":
+                loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] 
+            elif loopType == "inner_edge":
+                loop = [top[2*i+1], top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i+3]] 
+            elif loopType == "oblique":
+                loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i+2]] 
+            else:
+               
+                raise ValueError('Selected loopType is unavailable.')
+            """
             self.points.append(loop)
 
         self.points = np.array(self.points)
 
     def Plot2D(self):
         """ 
-        Visualize the extracted points to check if everything is ok. 
+        Visualize the extracted points to check if the geometry has the proper points.
         """
 
         test = list(chain.from_iterable(self.points2D))
@@ -227,7 +249,7 @@ class Geometry:
  
     def Plot3D(self):
         """ 
-        Visualize the 3D geometry to check if everything is ok. 
+        Visualize the 3D geometry to check if the geometry has the proper points.
         """
 
         test = list(chain.from_iterable(self.points))
