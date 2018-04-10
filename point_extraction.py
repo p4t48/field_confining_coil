@@ -4,6 +4,9 @@ This file contains the Geometry class.
 With the methods in Geometry you can extract the proper points from a COMSOL
 generated file. These points provide the basis to build a coil.
 
+Several plotting methods are provided to visualize the points forming the
+coil. Additionally, the coil squeleton can be visualized.
+
 More methods are provided to misalign the points of the structure (current
 carrying wires). This allows to simulate more realistic cases.
 
@@ -38,11 +41,15 @@ def find_furthest(array,value):
 class Geometry:
     
     def __init__(self, dataFile):
+        
         self.dataFile = dataFile
         self.fileName = re.search('(.+).csv', self.dataFile).group(1)
         self.workingFolder = re.search('(.+)/(.+)/', self.dataFile).group(0)
+        self.isopotentials = int(re.search('iso_(.+?)_outer', self.fileName).group(1))
+        
         self.points2D = []
         self.points = []
+        self.zHeight = []
 
     def SquareBoundaryPoints(self):
         """ 
@@ -206,6 +213,9 @@ class Geometry:
             
         """
 
+        self.zHeight = zHeight
+        self.points = []
+        
         points2D = list(chain.from_iterable(self.points2D))
         points2D = np.array(points2D)
         bottom = np.hstack((points2D, 0*np.ones((points2D.shape[0],1))))
@@ -213,21 +223,24 @@ class Geometry:
 
         for i in range(int((len(bottom)-1)/2)):
             
-            loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] 
-            """
+            
             if loopType == "disc":
                 # The five points build a disconnected loop coil (for winding sense use Arrows3D)
                 loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i]] 
-            elif loopType == "outer_edge":
-                loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] 
+                
             elif loopType == "inner_edge":
+                loop = [top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], top[2*i+2]] 
+                
+            elif loopType == "outer_edge":
                 loop = [top[2*i+1], top[2*i], bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i+3]] 
+                
             elif loopType == "oblique":
                 loop = [bottom[2*i], bottom[2*i+1], top[2*i+1], top[2*i], bottom[2*i+2]] 
+                
             else:
                
                 raise ValueError('Selected loopType is unavailable.')
-            """
+            
             self.points.append(loop)
 
         self.points = np.array(self.points)
@@ -294,39 +307,34 @@ class Geometry:
             ax.quiver(x,y,z,u,v,w, length=0.05, arrow_length_ratio=0.1)
         plt.show()
 
-    def Draw3D(self):
+    def Draw3D(self, quadrants=1):
         """ 
         Draws a 3D squeleton of the coil as illustration of the coil geometry. 
+        
+        Parameter:
+        ----------
+        
+        quadrants: integer
+            Indicate how many quadrants of the coils you want to display.
+            
         """
         
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-
-        point  = np.array([0.02, 0.02, 0.175])
-        normal = np.array([0, 0, 0.1])
-        d = -point.dot(normal)
-        # create x,y
-        xx, yy = np.meshgrid(np.arange(-0.2,0.2,0.01), np.arange(-0.2,0.2,0.01))
-
-        # calculate corresponding z
-        z = (-normal[0] * xx - normal[1] * yy - d) * 1. /normal[2]
-
-        # plot the surface
-        ax.plot_surface(xx, yy, z, alpha=0.5)
-        ax.hold(True)
         
         x, y, z = [], [], []
-
-        for loop in self.points:
-            location = loop[0:5]
-            location = np.column_stack(location)
+        plotItems = int(quadrants * self.isopotentials)
+        
+        for loop in self.points[0:plotItems]:
+            location = np.column_stack(loop)
 
             x = location[0]
             y = location[1]
             z = location[2]
 
             ax.plot(x, y, z, 'k')
+            
         plt.axis('off')
         plt.show()
 
